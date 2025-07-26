@@ -3,6 +3,7 @@ import ast
 import os.path
 import pickle
 
+import cv2
 from PIL import Image
 
 import pandas as pd
@@ -82,14 +83,15 @@ if __name__ == '__main__':
         caption_dict = {}
         for row in df.itertuples():
             image_path = os.path.join(args.vg_path,f"{row.vg_image_id}.jpg")
-            original_image = Image.open(image_path).convert('RGB')
+            original_image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
             bbox_xywh = row.bbox_xywh
             bbox_xywh = ast.literal_eval(bbox_xywh)
             cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3], bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
 
-            caption_image = generate_caption(original_image)
-            caption_cropped_image = generate_caption(cropped_image)
+            caption_image = generate_caption(original_image,vlm=vlm)
+            caption_cropped_image = generate_caption(cropped_image,vlm=vlm)
+            cv2.imwrite('BBox.png', cropped_image)
 
             caption_dict[row.vg_object_id] = {
                 "original_caption": caption_image,
