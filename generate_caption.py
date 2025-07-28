@@ -8,7 +8,7 @@ from PIL import Image
 
 import pandas as pd
 from huggingface_hub import hf_hub_download
-from open_flamingo import create_model_and_transforms
+#from open_flamingo import create_model_and_transforms
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
 
@@ -79,12 +79,14 @@ if __name__ == '__main__':
     df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
     #   vg_object_id	vg_image_id	topname	responses	incorrect	domain	synsets	N
     #   total_responses	perc_top	H	split	vg_synset	link_mn	bbox_xywh
-    df = df.loc[df['vg_image_id'] == 3]
     for vlm in args.vlm:
         caption_dict = {}
         i = 0
         for row in df.itertuples():
             image_path = os.path.join(args.vg_path, f"{row.vg_image_id}.jpg")
+            if not os.path.exists(image_path):
+                print(f"Image {image_path} does not exist, skipping...")
+                continue
             original_image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
             bbox_xywh = row.bbox_xywh
@@ -100,7 +102,7 @@ if __name__ == '__main__':
                 "original_caption": caption_image,
                 "cropped_caption": caption_cropped_image,
             }
-            if i % 1000 == 0:
+            if i % 1000 == 1:
                 with open(f'captions/{vlm}.pkl', 'wb') as f:
                     pickle.dump(caption_dict, f)
 
