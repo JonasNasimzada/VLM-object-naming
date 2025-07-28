@@ -101,10 +101,10 @@ if __name__ == '__main__':
                 "cropped_caption": caption_cropped_image,
             }
             if i % 1000 == 0:
-                with open(f'captions/{args.vlm}.pkl', 'wb') as f:
+                with open(f'captions/{vlm}.pkl', 'wb') as f:
                     pickle.dump(caption_dict, f)
 
             i += 1
 
-        with open(f'captions/{args.vlm}.pkl', 'wb') as b:
+        with open(f'captions/{vlm}.pkl', 'wb') as b:
             pickle.dump(caption_dict, b)
