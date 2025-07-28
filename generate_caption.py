@@ -12,9 +12,9 @@ from open_flamingo import create_model_and_transforms
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
 
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
 MAX_TOKENS = 512  # Maximum number of tokens for caption generation
+
 
 def generate_flamingo(image):
     model, image_processor, tokenizer = create_model_and_transforms(
@@ -33,7 +33,7 @@ def generate_flamingo(image):
 
     tokenizer.padding_side = "left"  # For generation padding tokens should be on the left
     lang_x = tokenizer(
-        ["<image><|endofchunk|>"], # TODO might require a different prompt
+        ["<image><|endofchunk|>"],  # TODO might require a different prompt
         return_tensors="pt",
     )
     generated_text = model.generate(
@@ -46,6 +46,7 @@ def generate_flamingo(image):
     prompt = tokenizer.decode(generated_text[0])
 
     return prompt
+
 
 def generate_blip2(image):
     processor = AutoProcessor.from_pretrained("Salesforce/blip2-opt-2.7b")
@@ -60,7 +61,7 @@ def generate_blip2(image):
 def generate_caption(image, vlm="BLIP2"):
     if vlm == "BLIP2":
         generated_text = generate_blip2(image)
-    elif vlm =="flamingo":
+    elif vlm == "flamingo":
         generated_text = generate_flamingo(image)
     else:
         raise ValueError(f"Unsupported VLM: {vlm}")
@@ -70,7 +71,7 @@ def generate_caption(image, vlm="BLIP2"):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2","flamingo"], default="BLIP2")
+    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo"], default="BLIP2")
     parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
     parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
     args = parser.parse_args()
@@ -78,25 +79,32 @@ if __name__ == '__main__':
     df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
     #   vg_object_id	vg_image_id	topname	responses	incorrect	domain	synsets	N
     #   total_responses	perc_top	H	split	vg_synset	link_mn	bbox_xywh
-    df=df.loc[df['vg_image_id'] == 3]
+    df = df.loc[df['vg_image_id'] == 3]
     for vlm in args.vlm:
         caption_dict = {}
+        i = 0
         for row in df.itertuples():
-            image_path = os.path.join(args.vg_path,f"{row.vg_image_id}.jpg")
+            image_path = os.path.join(args.vg_path, f"{row.vg_image_id}.jpg")
             original_image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
             bbox_xywh = row.bbox_xywh
             bbox_xywh = ast.literal_eval(bbox_xywh)
-            cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3], bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
+            cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3],
+                            bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
 
-            caption_image = generate_caption(original_image,vlm=vlm)
-            caption_cropped_image = generate_caption(cropped_image,vlm=vlm)
+            caption_image = generate_caption(original_image, vlm=vlm)
+            caption_cropped_image = generate_caption(cropped_image, vlm=vlm)
             cv2.imwrite('BBox.png', cropped_image)
 
             caption_dict[row.vg_object_id] = {
                 "original_caption": caption_image,
                 "cropped_caption": caption_cropped_image,
             }
+            if i % 1000 == 0:
+                with open(f'captions/{args.vlm}.pkl', 'wb') as f:
+                    pickle.dump(caption_dict, f)
 
-        with open(f'captions/{args.vlm}.pkl', 'wb') as f:
-            pickle.dump(caption_dict, f)
+            i += 1
+
+        with open(f'captions/{args.vlm}.pkl', 'wb') as b:
+            pickle.dump(caption_dict, b)
