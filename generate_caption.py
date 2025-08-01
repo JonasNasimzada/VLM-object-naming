@@ -73,41 +73,6 @@ def generate_caption(image, vlm="BLIP2"):
     return generated_text
 
 
-def generate_image_pickle():
-    df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
-    #   vg_object_id	vg_image_id	topname	responses	incorrect	domain	synsets	N
-    #   total_responses	perc_top	H	split	vg_synset	link_mn	bbox_xywh
-    for vlm in args.vlm:
-        caption_dict = {}
-        i = 0
-        for row in df.itertuples():
-            image_path = os.path.join(args.vg_path, f"{row.vg_image_id}.jpg")
-            if not os.path.exists(image_path):
-                print(f"Image {image_path} does not exist, skipping...")
-                continue
-            original_image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-
-            bbox_xywh = row.bbox_xywh
-            bbox_xywh = ast.literal_eval(bbox_xywh)
-            cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3],
-                            bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
-
-            caption_image = generate_caption(original_image, vlm=vlm)
-            caption_cropped_image = generate_caption(cropped_image, vlm=vlm)
-
-            caption_dict[row.vg_object_id] = {
-                "original_caption": caption_image,
-                "cropped_caption": caption_cropped_image,
-            }
-            if i % 1000 == 1:
-                with open(f'captions/{vlm}.pkl', 'wb') as f:
-                    pickle.dump(caption_dict, f)
-
-            i += 1
-
-        with open(f'captions/{vlm}.pkl', 'wb') as b:
-            pickle.dump(caption_dict, b)
-
 
 if __name__ == '__main__':
 
