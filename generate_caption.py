@@ -1,14 +1,18 @@
 import argparse
 import ast
-import os.path
+import os
+from os import path
 import pickle
+import sys
 
 import cv2
 from PIL import Image
 
+sys.path.append(path.abspath('../Show_and_Tell'))
+
 import pandas as pd
 from huggingface_hub import hf_hub_download
-#from open_flamingo import create_model_and_transforms
+# from open_flamingo import create_model_and_transforms
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
 
@@ -68,14 +72,7 @@ def generate_caption(image, vlm="BLIP2"):
     return generated_text
 
 
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo"], default="BLIP2")
-    parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
-    parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
-    args = parser.parse_args()
-
+def generate_image_pickle():
     df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
     #   vg_object_id	vg_image_id	topname	responses	incorrect	domain	synsets	N
     #   total_responses	perc_top	H	split	vg_synset	link_mn	bbox_xywh
@@ -96,7 +93,6 @@ if __name__ == '__main__':
 
             caption_image = generate_caption(original_image, vlm=vlm)
             caption_cropped_image = generate_caption(cropped_image, vlm=vlm)
-            cv2.imwrite('BBox.png', cropped_image)
 
             caption_dict[row.vg_object_id] = {
                 "original_caption": caption_image,
@@ -110,3 +106,28 @@ if __name__ == '__main__':
 
         with open(f'captions/{vlm}.pkl', 'wb') as b:
             pickle.dump(caption_dict, b)
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo"], default="BLIP2")
+    parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
+    parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
+    args = parser.parse_args()
+
+    df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
+
+    for row in df.itertuples():
+        image_path = os.path.join(args.vg_path, f"{row.vg_image_id}.jpg")
+        if not os.path.exists(image_path):
+            print(f"Image {image_path} does not exist, skipping...")
+            continue
+        original_image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+
+        bbox_xywh = row.bbox_xywh
+        bbox_xywh = ast.literal_eval(bbox_xywh)
+        cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3],
+                        bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
+        cv2.imwrite(f"images/{row.vg_image_id}.jpg", cropped_image)
+        cv2.imwrite(f"images/{row.vg_image_id}_cropped.jpg", cropped_image)
