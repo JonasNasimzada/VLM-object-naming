@@ -4,6 +4,7 @@ import os
 from os import path
 import pickle
 import sys
+from os.path import isfile, join
 
 import cv2
 from PIL import Image
@@ -114,6 +115,7 @@ if __name__ == '__main__':
     parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo"], default="BLIP2")
     parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
     parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
+    parser.add_argument('--images', type=str, required=False, default="images")
     args = parser.parse_args()
 
     df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
@@ -129,5 +131,24 @@ if __name__ == '__main__':
         bbox_xywh = ast.literal_eval(bbox_xywh)
         cropped_image = original_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3],
                         bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
-        cv2.imwrite(f"images/{row.vg_image_id}.jpg", cropped_image)
-        cv2.imwrite(f"images/{row.vg_image_id}_cropped.jpg", cropped_image)
+        cv2.imwrite(f"{args.images}/{row.vg_image_id}.jpg", cropped_image)
+        cv2.imwrite(f"{args.images}/{row.vg_image_id}_cropped.jpg", cropped_image)
+
+    images = [f for f in os.listdir(args.images) if isfile(join(args.images, f))]
+    for vlm in args.vlm:
+        caption_dict = {}
+        i = 0
+        for image in images:
+            original_image = cv2.imread(os.path.join(args.images, image), cv2.IMREAD_COLOR)
+
+            caption_image = generate_caption(original_image, vlm=vlm)
+
+            caption_dict[row.vg_object_id] = caption_image
+            if i % 1000 == 1:
+                with open(f'captions/{vlm}.pkl', 'wb') as f:
+                    pickle.dump(caption_dict, f)
+
+            i += 1
+
+        with open(f'captions/{vlm}.pkl', 'wb') as b:
+            pickle.dump(caption_dict, b)
