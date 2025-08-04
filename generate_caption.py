@@ -137,7 +137,7 @@ if __name__ == '__main__':
         caption_dict = {}
         i = 0
         for image_path in images:
-            original_image = cv2.imread(os.path.join(args.images, image_path), cv2.IMREAD_COLOR)
+            original_image = Image.open(os.path.join(args.images, image_path))
 
             caption_image = generate_caption(original_image, vlm_model=vlm)
 
