@@ -29,8 +29,10 @@ def generate_flamingo(image):
         lang_encoder_path="anas-awadalla/mpt-7b",
         tokenizer_path="anas-awadalla/mpt-7b",
         cross_attn_every_n_layers=1,
+
     )
-    checkpoint_path = hf_hub_download("anas-awadalla/mpt-7b", "checkpoint.pt")
+    model.to(device)
+    checkpoint_path = hf_hub_download("openflamingo/OpenFlamingo-9B-vitl-mpt7b", "checkpoint.pt")
     model.load_state_dict(torch.load(checkpoint_path), strict=False)
 
     vision_x = [image_processor(image).unsqueeze(0)]
@@ -43,9 +45,9 @@ def generate_flamingo(image):
         return_tensors="pt",
     )
     generated_text = model.generate(
-        vision_x=vision_x,
-        lang_x=lang_x["input_ids"],
-        attention_mask=lang_x["attention_mask"],
+        vision_x=vision_x.to(device),
+        lang_x=lang_x["input_ids"].to(device),
+        attention_mask=lang_x["attention_mask"].to(device),
         max_new_tokens=MAX_TOKENS,
         num_beams=3,
     )
