@@ -83,7 +83,7 @@ def generate_git(image):
     model.to(device)
     pixel_values = pixel_values.to(device)
 
-    generated_ids = model.generate(pixel_values=pixel_values, max_length=20)
+    generated_ids = model.generate(pixel_values=pixel_values, max_length=MAX_TOKENS)
     return processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
 
