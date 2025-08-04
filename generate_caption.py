@@ -70,8 +70,7 @@ def generate_llava(image):
         bnb_4bit_compute_dtype=torch.float16
     )
     model_id = "llava-hf/llava-1.5-7b-hf"
-    pipe = pipeline("image-to-text", model=model_id, model_kwargs={"quantization_config": quantization_config},
-                    device=device)
+    pipe = pipeline("image-to-text", model=model_id, model_kwargs={"quantization_config": quantization_config})
     prompt = "USER: <image>\nWhat is shown in this image?\nASSISTANT:"
     outputs = pipe(image, prompt=prompt, generate_kwargs={"max_new_tokens": MAX_TOKENS})
     return outputs[0]["generated_text"]
