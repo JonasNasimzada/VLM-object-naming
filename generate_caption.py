@@ -131,7 +131,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.crop_images:
-        df = pd.read_csv("manynames-en.tsv", encoding="utf-8", sep="\t")
+        df = pd.read_csv(args.csv, encoding="utf-8", sep="\t")
         crop_images(df)
 
     images = [f for f in os.listdir(args.images) if isfile(join(args.images, f))]
