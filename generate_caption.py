@@ -6,7 +6,7 @@ import pickle
 import sys
 from os.path import isfile, join
 import torch
-from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM
+from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, GenerationConfig
 import cv2
 from PIL import Image
 
@@ -89,6 +89,35 @@ def generate_git(image):
     return processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
 
+def generate_molmo(image):
+    processor = AutoProcessor.from_pretrained(
+        'allenai/Molmo-72B-0924',
+        trust_remote_code=True,
+        torch_dtype='auto',
+        device_map='auto'
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        'allenai/Molmo-72B-0924',
+        trust_remote_code=True,
+        torch_dtype='auto',
+        device_map='auto'
+    )
+    inputs = processor.process(
+        images=[image],
+        text="Describe this image."
+    )
+    inputs = {k: v.to(model.device).unsqueeze(0) for k, v in inputs.items()}
+    with torch.autocast(device_type="cuda", enabled=True, dtype=torch.bfloat16):
+        output = model.generate_from_batch(
+            inputs,
+            GenerationConfig(max_new_tokens=MAX_TOKENS, stop_strings="<|endoftext|>"),
+            tokenizer=processor.tokenizer
+        )
+    generated_tokens = output[0, inputs['input_ids'].size(1):]
+    generated_text = processor.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+    return generated_text
+
+
 def generate_caption(image, vlm_model="BLIP2"):
     if vlm_model == "BLIP2":
         generated_text = generate_blip2(image)
@@ -114,7 +143,7 @@ def crop_images(dataframe):
         bbox_xywh = row.bbox_xywh
         bbox_xywh = ast.literal_eval(bbox_xywh)
         cropped_image = full_image[bbox_xywh[1]:bbox_xywh[1] + bbox_xywh[3],
-                        bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
+        bbox_xywh[0]:bbox_xywh[0] + bbox_xywh[2]]
         cv2.imwrite(f"{args.images}/{row.vg_image_id}.jpg", full_image)
         cv2.imwrite(f"{args.images}/{row.vg_image_id}_cropped.jpg", cropped_image)
 
