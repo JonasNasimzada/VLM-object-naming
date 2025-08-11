@@ -1,14 +1,14 @@
 import argparse
 import ast
 import os
-from os import path
 import pickle
 import sys
+from os import path
 from os.path import isfile, join
-import torch
-from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, GenerationConfig
+
 import cv2
 from PIL import Image
+from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, GenerationConfig
 
 sys.path.append(path.abspath('../Show_and_Tell'))
 
@@ -91,13 +91,13 @@ def generate_git(image):
 
 def generate_molmo(image):
     processor = AutoProcessor.from_pretrained(
-        'allenai/Molmo-72B-0924',
+        'allenai/Molmo-7B-O-0924',
         trust_remote_code=True,
         torch_dtype='auto',
         device_map='auto'
     )
     model = AutoModelForCausalLM.from_pretrained(
-        'allenai/Molmo-72B-0924',
+        'allenai/Molmo-7B-O-0924',
         trust_remote_code=True,
         torch_dtype='auto',
         device_map='auto'
@@ -127,6 +127,8 @@ def generate_caption(image, vlm_model="BLIP2"):
         generated_text = generate_llava(image)
     elif vlm_model == "git":
         generated_text = generate_git(image)
+    elif vlm_model == "molmo":
+        generated_text = generate_molmo(image)
     else:
         raise ValueError(f"Unsupported VLM: {vlm_model}")
     return generated_text
@@ -151,7 +153,8 @@ def crop_images(dataframe):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo", "llava", "git"],
+    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo", "llava", "git", "molmo"],
+                        help="Specify the VLM model to use for caption generation.",
                         default="BLIP2")
     parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
     parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
