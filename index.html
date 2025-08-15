@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zero‑Shot Caption Qualitative Annotator (Orig vs Crop)</title>
+  <style>
+    :root{
+      --bg:#0f1220; --fg:#e9ecf1; --muted:#acb2c1; --panel:#171a2b; --accent:#6ea8fe; --accent2:#8ef5c8;
+      --bad:#ff6b6b; --warn:#ffbf69; --good:#16db65; --card:#14182a; --chip:#242946;
+    }
+    html,body{height:100%;}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans',sans-serif;background:var(--bg);color:var(--fg);}
+    .app{display:grid;grid-template-columns:300px 1fr;gap:16px;height:100vh;}
+    header{grid-column:1/3;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0));border-bottom:1px solid #222844;position:sticky;top:0;z-index:5}
+    header .group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    button,input[type="file"]::file-selector-button{background:var(--chip);color:var(--fg);border:1px solid #30365a;padding:8px 10px;border-radius:10px;cursor:pointer}
+    button:hover{border-color:#49518a}
+    .secondary{background:transparent;border-color:#3b4169}
+    .danger{border-color:#634; background:#2a0e18}
+    .ok{border-color:#2d5; background:#0c2319}
+    .sidebar{padding:12px 12px 16px;border-right:1px solid #222844;overflow:auto}
+    .card{background:var(--panel);border:1px solid #222844;border-radius:14px;padding:12px}
+    .kpi{display:flex;gap:12px;flex-wrap:wrap}
+    .kpi .pill{background:var(--chip);border:1px solid #2a315a;border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .models{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+    .models button{border-radius:999px;padding:6px 10px;border:1px solid #2a315a;background:#1b2038;color:#cfd7ff}
+    .models button.active{outline:2px solid var(--accent);font-weight:600}
+    .list{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+    .list .row{display:flex;gap:8px;align-items:center;padding:8px;border-radius:10px;border:1px solid #222844;background:#12162a;cursor:pointer}
+    .row.active{outline:2px solid var(--accent)}
+    .row .id{font-weight:600;color:#d4defa}
+    .row .small{font-size:11px;color:#94a0c0;margin-left:auto}
+    .main{padding:12px 12px 24px;overflow:auto}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .panelTitle{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
+    .imgWrap{background:var(--card);border:1px solid #222844;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:260px}
+    img{max-width:100%;max-height:60vh;object-fit:contain;background:#0b0e1a}
+    .caption{font-size:14px;border-left:3px solid var(--accent);padding-left:8px;color:#dfe6ff}
+    .form{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:10px}
+    .field{background:var(--chip);border:1px solid #2a315a;border-radius:12px;padding:8px}
+    .field h4{margin:0 0 6px 0;font-size:12px;color:#c8cfe7}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{padding:6px 8px;border-radius:999px;border:1px solid #3b4169;background:#161b31;color:#dfe6ff;font-size:12px;cursor:pointer}
+    .chip.active{outline:2px solid var(--accent)}
+    .chip.bad{background:#241318;border-color:#5b1b2b}
+    .chip.warn{background:#2a1f0f;border-color:#6a4b17}
+    .chip.good{background:#112317;border-color:#1b6a3e}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .subtle{font-size:12px;color:#99a5c7}
+    .footerBar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:12px}
+    .nav{display:flex;gap:6px}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:#0e1426;border:1px solid #2b3258;border-radius:6px;padding:2px 6px;font-size:12px;color:#d1d7ff}
+    details{background:#0e1326;border:1px solid #222844;border-radius:12px;padding:10px}
+    summary{cursor:pointer}
+    .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .hr{height:1px;background:#222844;margin:10px 0}
+    .smallInput{width:70px}
+    .progress{height:8px;background:#1a1f36;border:1px solid #2a315a;border-radius:999px;overflow:hidden}
+    .progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+    .badge{background:#142033;border:1px solid #2a315a;border-radius:8px;padding:4px 8px;color:#cfd7ff;font-size:12px}
+    .flex{display:flex;gap:8px;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="group">
+      <strong>Zero‑Shot Caption Qualitative Annotator</strong>
+      <span class="badge">Orig ↔ Crop</span>
+      <span class="muted">Comparison</span>
+    </div>
+    <div class="group">
+      <label class="badge" title="Load dataset JSON"><input id="datasetFile" type="file" accept="application/json" hidden /> <span>Load Dataset</span></label>
+      <button id="btnImportAnno" class="secondary" title="Import annotations JSON">Import Annotations</button>
+      <button id="btnExportAnno" title="Export annotations JSON">Export JSON</button>
+      <button id="btnExportCSV" class="ok" title="Export a flat CSV for analysis">Export CSV</button>
+      <button id="btnClear" class="danger" title="Clear annotations (kept dataset)">Clear</button>
+      <details>
+        <summary>Help & Keyboard</summary>
+        <div style="max-width:900px">
+          <p>This tool lets you annotate captions from multiple models on <em>original</em> vs <em>cropped</em> images , and record Orig↔Crop deltas . Everything auto‑saves to your browser.</p>
+          <div class="hr"></div>
+          <h3>Dataset JSON schema</h3>
+<pre style="white-space:pre-wrap;background:#0b0f20;padding:10px;border-radius:8px;border:1px solid #222844">{
+  "models": ["blip2","show_and_tell","openflamingo","git","llava","molmo"],
+  "items": [
+    {
+      "id": "img001",
+      "image": "images/img001.jpg",
+      "crop":  "images/img001_crop.jpg",
+      "captions": {
+        "blip2":        {"original": "...", "crop": "..."},
+        "show_and_tell":{"original": "...", "crop": "..."},
+        "openflamingo": {"original": "...", "crop": "..."},
+        "git":          {"original": "...", "crop": "..."},
+        "llava":        {"original": "...", "crop": "..."},
+        "molmo":        {"original": "...", "crop": "..."}
+      }
+    }
+  ]
+}</pre>
+          <p>Tip: Place this <code>index.html</code> next to an <code>images/</code> folder and run any static server (e.g., <span class="kbd">python -m http.server 8080</span>) so relative image paths load via <code>http://localhost:8080</code>.</p>
+          <div class="hr"></div>
+          <h3>Keyboard (focus panel is shown with a glow)</h3>
+          <ul>
+            <li><b>Navigation:</b> <span class="kbd">[</span>/<span class="kbd">]</span> prev/next item, <span class="kbd">,</span>/<span class="kbd">.</span> prev/next model</li>
+            <li><b>Focus panel:</b> <span class="kbd">O</span> = Original, <span class="kbd">C</span> = Crop</li>
+            <li><b>Adequacy:</b> <span class="kbd">1</span>=1, <span class="kbd">2</span>=0.5, <span class="kbd">3</span>=0</li>
+            <li><b>Error type:</b> <span class="kbd">R</span>=Referential, <span class="kbd">V</span>=Visual, <span class="kbd">L</span>=Linguistic, <span class="kbd">X</span>=Other</li>
+            <li><b>Naming level:</b> <span class="kbd">G</span>=Super, <span class="kbd">B</span>=Basic, <span class="kbd">F</span>=Sub</li>
+            <li><b>Attributes:</b> <span class="kbd">A</span>=Correct, <span class="kbd">W</span>=Wrong, <span class="kbd">M</span>=Missing</li>
+            <li><b>Relations:</b> <span class="kbd">Q</span>=Correct, <span class="kbd">E</span>=Wrong, <span class="kbd">Z</span>=Missing</li>
+            <li><b>Hallucinations:</b> <span class="kbd">H</span> cycles 0→1→2+</li>
+            <li><b>Fluency:</b> <span class="kbd">Alt</span>+<span class="kbd">1..5</span></li>
+            <li><b>Same‑object (Crop):</b> <span class="kbd">Y</span>=Yes, <span class="kbd">U</span>=Uncertain, <span class="kbd">N</span>=No</li>
+            <li><b>Deltas (Orig↔Crop):</b> <span class="kbd">S</span>=Specificity shift (cycle), <span class="kbd">D</span>=Head noun change (cycle), <span class="kbd">T</span>=Attribute retention (cycle)</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="card" id="datasetInfo">
+        <div class="kpi">
+          <div class="pill"><span id="kItems">0</span> items</div>
+          <div class="pill"><span id="kModels">0</span> models</div>
+          <div class="pill"><span id="kProgress">0%</span> done</div>
+        </div>
+        <div class="progress" style="margin-top:8px"><div id="progressBar" style="width:0%"></div></div>
+        <div class="hr"></div>
+        <div class="muted" id="dsName">No dataset loaded</div>
+      </div>
+      <div class="card">
+        <div class="muted">Models</div>
+        <div id="models" class="models"></div>
+      </div>
+      <div class="card">
+        <div class="muted">Items</div>
+        <div class="list" id="itemList"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="workArea" class="grid" style="opacity:.7">
+        <!-- Original Panel -->
+        <section class="card" id="panelOriginal" data-panel="original">
+          <div class="panelTitle">
+            <div>
+              <div class="muted">Original</div>
+              <div id="origId" class="subtle"></div>
+            </div>
+            <div class="subtle">Focus: <span class="badge" id="focusO">OFF</span></div>
+          </div>
+          <div class="imgWrap"><img id="imgOriginal" alt="original"/></div>
+          <div class="caption" id="capOriginal"></div>
+          <div class="form" id="formOriginal"></div>
+        </section>
+
+        <!-- Crop Panel -->
+        <section class="card" id="panelCrop" data-panel="crop">
+          <div class="panelTitle">
+            <div>
+              <div class="muted">Crop</div>
+              <div id="cropId" class="subtle"></div>
+            </div>
+            <div class="subtle">Focus: <span class="badge" id="focusC">OFF</span></div>
+          </div>
+          <div class="imgWrap"><img id="imgCrop" alt="crop"/></div>
+          <div class="caption" id="capCrop"></div>
+          <div class="form" id="formCrop"></div>
+        </section>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="panelTitle">
+          <div>
+            <strong>Deltas (Original ↔ Crop)</strong>
+            <span class="muted">for current item + model</span>
+          </div>
+          <div class="subtle">Use keys <span class="kbd">S</span>, <span class="kbd">D</span>, <span class="kbd">T</span></div>
+        </div>
+        <div class="cols">
+          <div class="field">
+            <h4>Specificity shift</h4>
+            <div class="chips" id="deltaSpecificity"></div>
+          </div>
+          <div class="field">
+            <h4>Head noun change</h4>
+            <div class="chips" id="deltaHead"></div>
+          </div>
+          <div class="field">
+            <h4>Attribute retention</h4>
+            <div class="chips" id="deltaAttr"></div>
+          </div>
+          <div class="field">
+            <h4>Error shift (free note)</h4>
+            <input id="deltaErrorNote" class="smallInput" placeholder="e.g., referential↑" />
+          </div>
+          <div class="field">
+            <h4>Notes</h4>
+            <input id="deltaNotes" style="width:100%" placeholder="Optional short note" />
+          </div>
+        </div>
+      </div>
+
+      <div class="footerBar">
+        <div class="nav">
+          <button id="prevItem">⟵ Prev Item [</button>
+          <button id="nextItem">Next Item ] ⟶</button>
+          <button id="prevModel">⟵ Prev Model ,</button>
+          <button id="nextModel">Next Model . ⟶</button>
+        </div>
+        <div class="flex">
+          <span class="muted">Focus:</span>
+          <button id="focusOrig">O: Original</button>
+          <button id="focusCrop">C: Crop</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <input id="annoFile" type="file" accept="application/json" style="display:none" />
+
+  <script>
+  // -------------------------------
+  // Small reactive store
+  // -------------------------------
+  const store = {
+    dataset: null,
+    annotations: {}, // { [itemId]: { [model]: { original: {...}, crop:{...}, deltas:{...} } } }
+    cur: { itemIdx: 0, modelIdx: 0, focus: 'original' },
+  };
+
+  const LS_KEY = 'zsqa_annotations_v1';
+  const DS_KEY = 'zsqa_dataset_name_v1';
+
+  function saveToLS(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(store.annotations)); }catch(e){ console.warn('Save fail', e); }
+  }
+  function loadFromLS(){
+    try{ const raw = localStorage.getItem(LS_KEY); if(raw){ store.annotations = JSON.parse(raw); } }catch(e){}
+  }
+  function setDatasetName(name){ try{ localStorage.setItem(DS_KEY, name||''); }catch(e){} }
+  function getDatasetName(){ try{ return localStorage.getItem(DS_KEY)||''; }catch(e){return ''}}
+
+  // -------------------------------
+  // DOM helpers
+  // -------------------------------
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  function el(tag, opts={}){ const e=document.createElement(tag); Object.assign(e, opts); return e; }
+
+  // -------------------------------
+  // UI: render dataset info, models, items
+  // -------------------------------
+  function renderDatasetInfo(){
+    const ds = store.dataset; const items = ds?.items?.length||0; const models = ds?.models?.length||0;
+    $('#kItems').textContent = items; $('#kModels').textContent = models; $('#dsName').textContent = ds? (ds.name||getDatasetName()||'Loaded dataset') : 'No dataset loaded';
+    // progress
+    const totalCells = items * models * 2; // orig+crop minimal completion = adequacy + naming level set
+    let done = 0;
+    if(items && models){
+      ds.items.forEach(it=>{
+        const a = store.annotations[it.id]||{};
+        ds.models.forEach(m=>{
+          const cellO = a[m]?.original||{}; const cellC = a[m]?.crop||{};
+          const okO = (cellO.adequacy!==undefined) && (cellO.namingLevel!==undefined);
+          const okC = (cellC.adequacy!==undefined) && (cellC.namingLevel!==undefined);
+          if(okO) done++; if(okC) done++;
+        })
+      })
+    }
+    const pct = totalCells? Math.round(100*done/totalCells):0;
+    $('#kProgress').textContent = pct+'%';
+    $('#progressBar').style.width = pct+'%';
+  }
+
+  function renderModels(){
+    const box = $('#models'); box.innerHTML='';
+    if(!store.dataset) return;
+    store.dataset.models.forEach((m,i)=>{
+      const b = el('button',{textContent:m});
+      b.className = i===store.cur.modelIdx? 'active':'';
+      b.onclick=()=>{ store.cur.modelIdx=i; renderAll(); };
+      box.appendChild(b);
+    })
+  }
+
+  function renderItems(){
+    const box = $('#itemList'); box.innerHTML='';
+    if(!store.dataset) return;
+    store.dataset.items.forEach((it,i)=>{
+      const row = el('div', {className:'row'+(i===store.cur.itemIdx?' active':'')});
+      const id = el('div',{className:'id',textContent:it.id});
+      const small = el('div',{className:'small',textContent:`${i+1}/${store.dataset.items.length}`});
+      row.appendChild(id); row.appendChild(small);
+      row.onclick=()=>{ store.cur.itemIdx=i; renderAll(); };
+      box.appendChild(row);
+    })
+  }
+
+  // -------------------------------
+  // Annotation form builders
+  // -------------------------------
+  const Adequacy = [
+    {k:1, label:'1 (perfect)'},
+    {k:0.5, label:'0.5 (minor issue)'},
+    {k:0, label:'0 (wrong target)'}
+  ];
+  const ErrorType = ['referential','visual','linguistic','other'];
+  const Naming = ['super','basic','sub'];
+  const Ternary = ['correct','wrong','missing'];
+  const Halluc = ['0','1','2+'];
+  const SameObject = ['yes','uncertain','no'];
+  const DeltaSpec = ['stable','super→basic','basic→super','basic→sub','sub→basic','super→sub','sub→super'];
+  const DeltaHead = ['stable','hypernym','hyponym','other'];
+  const DeltaAttr = ['kept','lost','added'];
+
+  function getCell(path){
+    const [itemId, model, panel] = path; // panel: 'original'|'crop'
+    store.annotations[itemId] = store.annotations[itemId]||{};
+    store.annotations[itemId][model] = store.annotations[itemId][model]||{original:{},crop:{},deltas:{}};
+    const cell = store.annotations[itemId][model][panel];
+    return cell;
+  }
+  function getDeltaCell(itemId, model){
+    store.annotations[itemId] = store.annotations[itemId]||{};
+    store.annotations[itemId][model] = store.annotations[itemId][model]||{original:{},crop:{},deltas:{}};
+    return store.annotations[itemId][model].deltas;
+  }
+
+  function chips(container, options, value, onChange){
+    container.innerHTML='';
+    options.forEach(opt=>{
+      const c = el('div',{className:'chip'+(value===opt||String(value)===String(opt)?' active':''),textContent:opt});
+      c.onclick=()=>{ onChange(opt); };
+      container.appendChild(c);
+    })
+  }
+
+  function formFor(panelId, panel){
+    const ds = store.dataset; if(!ds) return;
+    const it = ds.items[store.cur.itemIdx];
+    const model = ds.models[store.cur.modelIdx];
+    const cell = getCell([it.id, model, panel]);
+
+    const form = panel==='original'? $('#formOriginal') : $('#formCrop');
+    form.innerHTML='';
+
+    // Adequacy
+    const f1 = el('div',{className:'field'}); f1.appendChild(el('h4',{textContent:'Adequacy'}));
+    const box1 = el('div',{className:'chips'});
+    chips(box1, Adequacy.map(o=>o.k), cell.adequacy, (v)=>{ cell.adequacy = (typeof v==='string')? parseFloat(v):v; if(cell.adequacy===1) delete cell.errorType; saveToLS(); renderDatasetInfo(); });
+    f1.appendChild(box1);
+    // Error type (only if not perfect)
+    const f2 = el('div',{className:'field'}); f2.appendChild(el('h4',{textContent:'If not perfect: Error type'}));
+    const box2 = el('div',{className:'chips'});
+    chips(box2, ErrorType, cell.errorType, (v)=>{ cell.errorType=v; saveToLS(); });
+    f2.appendChild(box2);
+
+    // Naming level
+    const f3 = el('div',{className:'field'}); f3.appendChild(el('h4',{textContent:'Naming level'}));
+    const box3 = el('div',{className:'chips'});
+    chips(box3, Naming, cell.namingLevel, (v)=>{ cell.namingLevel=v; saveToLS(); renderDatasetInfo(); });
+    f3.appendChild(box3);
+
+    // Attributes
+    const f4 = el('div',{className:'field'}); f4.appendChild(el('h4',{textContent:'Attributes'}));
+    const box4 = el('div',{className:'chips'});
+    chips(box4, Ternary, cell.attributes, (v)=>{ cell.attributes=v; saveToLS(); });
+    f4.appendChild(box4);
+
+    // Relations
+    const f5 = el('div',{className:'field'}); f5.appendChild(el('h4',{textContent:'Relations'}));
+    const box5 = el('div',{className:'chips'});
+    chips(box5, Ternary, cell.relations, (v)=>{ cell.relations=v; saveToLS(); });
+    f5.appendChild(box5);
+
+    // Hallucinations
+    const f6 = el('div',{className:'field'}); f6.appendChild(el('h4',{textContent:'Hallucinations'}));
+    const box6 = el('div',{className:'chips'});
+    chips(box6, Halluc, cell.hallucinations||'0', (v)=>{ cell.hallucinations=v; saveToLS(); });
+    f6.appendChild(box6);
+
+    // Fluency
+    const f7 = el('div',{className:'field'}); f7.appendChild(el('h4',{textContent:'Fluency (1-5)'}));
+    const inp = el('input',{type:'number',min:1,max:5,step:1,value:cell.fluency||'',className:'smallInput'});
+    inp.oninput=()=>{ const n=parseInt(inp.value,10); if(!isNaN(n) && n>=1 && n<=5){ cell.fluency=n; saveToLS(); } };
+    f7.appendChild(inp);
+
+    // Same-object (only in crop panel, but we allow both)
+    const f8 = el('div',{className:'field'}); f8.appendChild(el('h4',{textContent:'Same-object'}));
+    const box8 = el('div',{className:'chips'});
+    chips(box8, SameObject, cell.sameObject, (v)=>{ cell.sameObject=v; saveToLS(); });
+    f8.appendChild(box8);
+
+    // Layout
+    form.appendChild(f1); form.appendChild(f2); form.appendChild(f3); form.appendChild(f4); form.appendChild(f5); form.appendChild(f6); form.appendChild(f7); form.appendChild(f8);
+  }
+
+  function renderImagesAndCaptions(){
+    const ds = store.dataset; if(!ds){ $('#workArea').style.opacity=.7; return; }
+    $('#workArea').style.opacity=1;
+    const it = ds.items[store.cur.itemIdx];
+    const model = ds.models[store.cur.modelIdx];
+    $('#origId').textContent = `Item ${store.cur.itemIdx+1}/${ds.items.length} · ${it.id}`;
+    $('#cropId').textContent = `Model ${store.cur.modelIdx+1}/${ds.models.length} · ${model}`;
+    $('#imgOriginal').src = it.image; $('#imgCrop').src = it.crop;
+    const caps = it.captions?.[model]||{};
+    $('#capOriginal').textContent = caps.original || '(no caption)';
+    $('#capCrop').textContent = caps.crop || '(no caption)';
+  }
+
+  function renderDeltas(){
+    const ds = store.dataset; if(!ds) return;
+    const it = ds.items[store.cur.itemIdx];
+    const model = ds.models[store.cur.modelIdx];
+    const d = getDeltaCell(it.id, model);
+
+    chips($('#deltaSpecificity'), DeltaSpec, d.specificity, v=>{ d.specificity=v; saveToLS(); });
+    chips($('#deltaHead'), DeltaHead, d.head, v=>{ d.head=v; saveToLS(); });
+    chips($('#deltaAttr'), DeltaAttr, d.attr, v=>{ d.attr=v; saveToLS(); });
+
+    const err = $('#deltaErrorNote'); err.value = d.errorNote||''; err.oninput=()=>{ d.errorNote = err.value; saveToLS(); };
+    const notes = $('#deltaNotes'); notes.value = d.notes||''; notes.oninput=()=>{ d.notes = notes.value; saveToLS(); };
+  }
+
+  function renderFocus(){
+    const o = $('#focusO'); const c = $('#focusC');
+    o.textContent = store.cur.focus==='original'?'ON':'OFF';
+    c.textContent = store.cur.focus==='crop'?'ON':'OFF';
+    $('#panelOriginal').style.boxShadow = store.cur.focus==='original'?'0 0 0 2px var(--accent) inset':'';
+    $('#panelCrop').style.boxShadow = store.cur.focus==='crop'?'0 0 0 2px var(--accent) inset':'';
+  }
+
+  function renderAll(){
+    renderDatasetInfo();
+    renderModels();
+    renderItems();
+    renderImagesAndCaptions();
+    formFor('formOriginal','original');
+    formFor('formCrop','crop');
+    renderDeltas();
+    renderFocus();
+  }
+
+  // -------------------------------
+  // Dataset loading
+  // -------------------------------
+  $('#datasetFile').addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try{
+        const data = JSON.parse(r.result);
+        if(!data.items || !data.models) throw new Error('Missing items/models');
+        store.dataset = data; setDatasetName(f.name||'dataset.json');
+        store.cur = { itemIdx: 0, modelIdx: 0, focus: 'original' };
+        renderAll();
+      }catch(err){ alert('Invalid dataset JSON: '+err.message); }
+    };
+    r.readAsText(f);
+  });
+
+  // -------------------------------
+  // Import/Export annotations
+  // -------------------------------
+  $('#btnExportAnno').onclick = ()=>{
+    const blob = new Blob([JSON.stringify(store.annotations,null,2)], {type:'application/json'});
+    const a = el('a', {href:URL.createObjectURL(blob), download:'annotations.json'}); a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  };
+  $('#btnImportAnno').onclick = ()=>{ $('#annoFile').click(); };
+  $('#annoFile').addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+    r.onload=()=>{ try{ const data=JSON.parse(r.result); store.annotations=data; saveToLS(); renderAll(); }catch(err){ alert('Invalid annotations JSON'); } };
+    r.readAsText(f);
+  });
+  $('#btnClear').onclick=()=>{ if(confirm('Clear all annotations?')){ store.annotations={}; saveToLS(); renderAll(); } };
+
+  // -------------------------------
+  // CSV export (flat rows)
+  // -------------------------------
+  function toCSV(){
+    if(!store.dataset) return '';
+    const rows = [];
+    const head = ['item_id','model','view','adequacy','error_type','naming_level','attributes','relations','hallucinations','fluency','same_object','delta_specificity','delta_head','delta_attr','delta_error_note','delta_notes'];
+    rows.push(head.join(','));
+    store.dataset.items.forEach(it=>{
+      store.dataset.models.forEach(model=>{
+        const a = store.annotations[it.id]?.[model]||{original:{},crop:{},deltas:{}};
+        ['original','crop'].forEach(view=>{
+          const cell = a[view]||{}; const d = a.deltas||{};
+          const row = [
+            it.id, model, view,
+            val(cell.adequacy), val(cell.errorType), val(cell.namingLevel), val(cell.attributes), val(cell.relations), val(cell.hallucinations), val(cell.fluency), val(cell.sameObject),
+            view==='crop'? val(d.specificity):'', view==='crop'? val(d.head):'', view==='crop'? val(d.attr):'', view==='crop'? val(d.errorNote):'', view==='crop'? val(d.notes):''
+          ];
+          rows.push(row.map(csvEsc).join(','));
+        })
+      })
+    })
+    return rows.join('\n');
+  }
+  function val(v){ return (v===undefined||v===null)?'':String(v); }
+  function csvEsc(s){ s=String(s); if(/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"'; return s; }
+  $('#btnExportCSV').onclick=()=>{
+    const csv = toCSV(); if(!csv){ alert('Load a dataset first.'); return; }
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = el('a', {href:URL.createObjectURL(blob), download:'annotations.csv'}); a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  };
+
+  // -------------------------------
+  // Navigation + focus + keyboard
+  // -------------------------------
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  function nextItem(d){ if(!store.dataset) return; const L=store.dataset.items.length; store.cur.itemIdx = clamp(store.cur.itemIdx + d, 0, L-1); renderAll(); }
+  function nextModel(d){ if(!store.dataset) return; const L=store.dataset.models.length; store.cur.modelIdx = clamp(store.cur.modelIdx + d, 0, L-1); renderAll(); }
+
+  $('#prevItem').onclick=()=>nextItem(-1);
+  $('#nextItem').onclick=()=>nextItem(1);
+  $('#prevModel').onclick=()=>nextModel(-1);
+  $('#nextModel').onclick=()=>nextModel(1);
+  $('#focusOrig').onclick=()=>{ store.cur.focus='original'; renderFocus(); };
+  $('#focusCrop').onclick=()=>{ store.cur.focus='crop'; renderFocus(); };
+
+  document.addEventListener('keydown',(e)=>{
+    if(!store.dataset) return;
+    const it = store.dataset.items[store.cur.itemIdx];
+    const model = store.dataset.models[store.cur.modelIdx];
+    const panel = store.cur.focus; const cell = getCell([it.id, model, panel]);
+
+    if(e.key==='['){ e.preventDefault(); nextItem(-1); return; }
+    if(e.key===']'){ e.preventDefault(); nextItem(1); return; }
+    if(e.key===','){ e.preventDefault(); nextModel(-1); return; }
+    if(e.key==='.') { e.preventDefault(); nextModel(1); return; }
+    if(e.key.toLowerCase()==='o'){ store.cur.focus='original'; renderFocus(); return; }
+    if(e.key.toLowerCase()==='c'){ store.cur.focus='crop'; renderFocus(); return; }
+
+    // Adequacy 1/0.5/0 via 1/2/3
+    if(['1','2','3'].includes(e.key)){
+      const map={'1':1,'2':0.5,'3':0}; cell.adequacy = map[e.key]; if(cell.adequacy===1) delete cell.errorType; saveToLS(); renderDatasetInfo(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Error type R/V/L/X
+    if(['r','v','l','x'].includes(e.key.toLowerCase())){
+      const map={r:'referential',v:'visual',l:'linguistic',x:'other'}; cell.errorType = map[e.key.toLowerCase()]; saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Naming level G/B/F
+    if(['g','b','f'].includes(e.key.toLowerCase())){
+      const map={g:'super',b:'basic',f:'sub'}; cell.namingLevel = map[e.key.toLowerCase()]; saveToLS(); renderDatasetInfo(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Attributes A/W/M
+    if(['a','w','m'].includes(e.key.toLowerCase())){
+      const map={a:'correct',w:'wrong',m:'missing'}; cell.attributes = map[e.key.toLowerCase()]; saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Relations Q/E/Z
+    if(['q','e','z'].includes(e.key.toLowerCase())){
+      const map={q:'correct',e:'wrong',z:'missing'}; cell.relations = map[e.key.toLowerCase()]; saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Hallucinations H cycles
+    if(e.key.toLowerCase()==='h'){
+      const next = cell.hallucinations==='0'? '1': cell.hallucinations==='1'? '2+':'0'; cell.hallucinations = next; saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Fluency Alt+1..5
+    if(e.altKey && ['1','2','3','4','5'].includes(e.key)){
+      cell.fluency = parseInt(e.key,10); saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Same-object Y/U/N
+    if(['y','u','n'].includes(e.key.toLowerCase())){
+      const map={y:'yes',u:'uncertain',n:'no'}; cell.sameObject = map[e.key.toLowerCase()]; saveToLS(); formFor(panel==='original'?'formOriginal':'formCrop', panel); return;
+    }
+
+    // Deltas S/D/T cycles on deltas object
+    const d = getDeltaCell(it.id, model);
+    if(e.key.toLowerCase()==='s'){
+      const arr = DeltaSpec; const i = Math.max(0, arr.indexOf(d.specificity)); d.specificity = arr[(i+1)%arr.length]; saveToLS(); renderDeltas(); return;
+    }
+    if(e.key.toLowerCase()==='d'){
+      const arr = DeltaHead; const i = Math.max(0, arr.indexOf(d.head)); d.head = arr[(i+1)%arr.length]; saveToLS(); renderDeltas(); return;
+    }
+    if(e.key.toLowerCase()==='t'){
+      const arr = DeltaAttr; const i = Math.max(0, arr.indexOf(d.attr)); d.attr = arr[(i+1)%arr.length]; saveToLS(); renderDeltas(); return;
+    }
+  });
+
+  // -------------------------------
+  // Boot
+  // -------------------------------
+  loadFromLS();
+  renderAll();
+  </script>
+</body>
+</html>

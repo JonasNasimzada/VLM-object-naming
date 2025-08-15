@@ -41,7 +41,7 @@ def generate_flamingo(image):
 
     tokenizer.padding_side = "left"  # For generation padding tokens should be on the left
     lang_x = tokenizer(
-        ["<image>\nWhat is shown in this image?<|endofchunk|>"],  # TODO might require a different prompt
+        ["<image>\nWhat is shown in this image?<|endofchunk|>"],
         return_tensors="pt",
     )
     generated_text = model.generate(
@@ -167,6 +167,7 @@ if __name__ == '__main__':
         crop_images(df)
 
     images = [f for f in os.listdir(args.images) if isfile(join(args.images, f))]
+    os.makedirs("captions", exist_ok=True)
     for vlm in args.vlm:
         caption_dict = {}
         i = 0

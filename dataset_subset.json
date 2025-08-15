@@ -1,0 +1,251 @@
+{
+  "name": "subset_10",
+  "models": [
+    "BLIP2",
+    "git",
+    "llava",
+    "molmo"
+  ],
+  "items": [
+    {
+      "id": "2376382",
+      "image": "subset_10/images/2376382.jpg",
+      "crop": "subset_10/images/2376382_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a bed with a white comforter",
+          "crop": "a table with a clock and a basket on it"
+        },
+        "git": {
+          "original": "a table with a lamp, a lamp, a book, and a lamp on it.",
+          "crop": "a basket with a floral print on it sits next to a computer monitor."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a bedroom with a bed, a nightstand, and a lamp. The bed is positioned next to the nightstand, and there is a remote control placed on the nightstand. The room also features a bookshelf with several books on it. The overall atmosphere of the room appears to be cozy and comfortable.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a desk with a computer, a printer, and a basket underneath it. The desk is situated in a room with a chair nearby. The room also has a couch and a dining table. The overall setting appears to be a home office or a workspace."
+        },
+        "molmo": {
+          "original": " The image depicts a cozy bedroom with a small, brown wooden desk positioned against a beige wall. The desk, which has a white top adorned with orange and green floral patterns, is cluttered with various items. On the desk, there is a gray remote control, a red alarm clock, a green alarm clock, a white jar with a pink lid, and several books. A silver lamp with a white shade is also present, casting light over the desk. Beneath the desk, a brown wicker basket is visible. To the right of the desk, a bed with a white comforter and a white pillow is partially seen, accompanied by a floral pillow. The floor is white, and the overall scene is dimly lit, emphasizing the lamp's illumination.",
+          "crop": " The image depicts a small, dimly lit room with a white wall and a white floor. Dominating the scene is a wooden table with a white top adorned with red and green floral patterns. On the table, there are two clocks: a red one with a white face and black numbers, and a green one with a white face and black numbers. Additionally, a gray remote control with black buttons is placed on the table. Beneath the table, a dark brown wicker basket with a red cushion inside is visible. The room is cluttered with various wires and cords, including a black cord and a white cord, which are strewn across the floor. The overall ambiance of the room is dark and somewhat cluttered."
+        }
+      },
+      "domain": "home"
+    },
+    {
+      "id": "2394051",
+      "image": "subset_10/images/2394051.jpg",
+      "crop": "subset_10/images/2394051_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a man with blue paint on his face",
+          "crop": "a man with blue paint on his face"
+        },
+        "git": {
+          "original": "a man is cutting his hair with scissors.",
+          "crop": "a man is cutting his hair with scissors."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a man with a spiky haircut, standing in a room with a corkboard on the wall. He is holding a pair of scissors in his hand, possibly getting ready to cut his hair or trimming his spiky hair. The man appears to be focused on his task, and the room seems to be a comfortable and personal space for him.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a man with a spiky haircut, who is holding a pair of scissors in his hand. He appears to be in a room with a window, and there is a clock on the wall. The man is wearing a necklace, and the overall scene suggests that he might be in the process of cutting or styling his hair."
+        },
+        "molmo": {
+          "original": " In this detailed photograph, a young man with spiky, dark brown hair is captured in the act of styling his hair with a black comb in his right hand. He is wearing a gray t-shirt and has a nose ring in his left nostril. His expression is a subtle smirk as he looks directly at the camera. The setting appears to be a kitchen, evidenced by the white ceiling, an orange wall, and a window behind him through which green trees are visible. To his right, there is a cork board pinned with various papers, including a blue and white document and a green one. Below the cork board, a white refrigerator is partially visible, along with a white countertop and a white backsplash. The scene is well-lit, suggesting it is daytime, and the overall ambiance is casual and homely.",
+          "crop": " The image depicts a young man, likely in his late teens or early twenties, standing in a room with peach-colored walls and a window behind him. He has spiky, dark brown hair that he is in the process of cutting with a pair of black scissors held in his right hand. His hair is styled in a somewhat messy, spiky manner, and he is looking directly at the camera with a slight smirk. He is wearing a gray t-shirt and a distinctive necklace with a silver pendant. On his right wrist, he sports a black and brown bracelet. The background features a cork board on the right side, adorned with various papers, including a blue and white sign. The window behind him reveals a glimpse of green trees outside."
+        }
+      },
+      "domain": "people"
+    },
+    {
+      "id": "2318496",
+      "image": "subset_10/images/2318496.jpg",
+      "crop": "subset_10/images/2318496_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a horse pulling a carriage",
+          "crop": "a blue horse pulling a carriage"
+        },
+        "git": {
+          "original": "a horse is pulling a carriage with a horse on it.",
+          "crop": "a horse with a bridle that says \" the horse \"."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a horse pulling a carriage down a street. The horse is positioned on the left side of the scene, and the carriage is located on the right side. There are also a few people in the scene, with one person standing near the horse and another person standing further away. The overall atmosphere of the image suggests a historical or traditional setting.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a horse pulling a carriage down a street. The horse is wearing blinders, which are a type of horse harness designed to prevent the horse from being distracted by its surroundings. The carriage is carrying a passenger, and the scene captures the interaction between the horse and the street environment."
+        },
+        "molmo": {
+          "original": " The image depicts a brown horse with a black mane and blinders, harnessed to a beige, two-wheeled carriage with red wheels. The carriage, which appears to be empty, has a blue water bucket attached to it. The horse is positioned on a gray brick road, facing left, with its head slightly lowered. The scene is set against a backdrop of a large, ornate building with intricate architectural details, possibly a church or castle, made of beige stone. The sky above is a mix of blue and white clouds, suggesting a partly cloudy day. In the distance, modern cars are visible, indicating the blend of historical and contemporary elements in the setting.",
+          "crop": " The image depicts a brown horse with a black mane and black lower legs, standing on a gray stone sidewalk in front of a large, tan-colored building with a stone facade. The horse is equipped with a black leather saddle and a red harness that wraps around its body and neck. It is also wearing a blindfold over its eyes, which is connected to a metal bit in its mouth. The horse is facing left and appears to be tied to a lamppost, though the post itself is not visible in the image. The scene is set outdoors during the daytime, with the horse as the central focus of the photograph."
+        }
+      },
+      "domain": "buildings"
+    },
+    {
+      "id": "2364664",
+      "image": "subset_10/images/2364664.jpg",
+      "crop": "subset_10/images/2364664_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a horse with a blue mask on its face",
+          "crop": "a horse with a mask on"
+        },
+        "git": {
+          "original": "a horse with a mask on its head stands in a field with other horses.",
+          "crop": "a horse with a black mask on its head and a black mask on its head."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows two horses standing in a grassy field. One of the horses is wearing a mask, which is likely a protective covering for its eyes. The horses are positioned near a wooden fence, and there is a tree in the background. The scene appears to be a peaceful and natural environment for the horses.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a brown horse standing next to a wooden fence. The horse is wearing a bridle and appears to be looking over the fence. The scene captures the horse's curiosity and interaction with its surroundings."
+        },
+        "molmo": {
+          "original": " In this vibrant outdoor scene, a brown horse with a black mask and a white stripe down its forehead stands prominently in the foreground, facing the camera. The horse's ears are perked up, and its tail is visible, adding to its alert appearance. Behind the horse, a white and gray speckled sheep with a white tail is partially obscured, its head hidden behind the horse. Both animals are enclosed by a wooden fence, which features two horizontal slats supported by vertical posts. The fence is situated in a lush, green field with tall grass, and the background is adorned with a dense array of trees. The sky above is a clear blue, dotted with a few white clouds, completing this picturesque rural setting.",
+          "crop": " In this outdoor photograph, a brown horse with a white stripe down its forehead and a white tail stands in a grassy field. The horse is wearing a black fly mask that covers its eyes and ears, leaving its nose and mouth exposed. It is positioned behind a wooden fence made of vertical and horizontal brown planks. The background features a mix of green trees and bushes, with a glimpse of blue sky peeking through the foliage. The horse appears to be looking directly at the camera, and its shadow is visible on the ground."
+        }
+      },
+      "domain": "animals_plants"
+    },
+    {
+      "id": "2363682",
+      "image": "subset_10/images/2363682.jpg",
+      "crop": "subset_10/images/2363682_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a dog jumping in the air to catch a frisbee",
+          "crop": "a dog jumping in the air to catch a frisbee"
+        },
+        "git": {
+          "original": "a dog is jumping in the air with a frisbee in its mouth.",
+          "crop": "a dog with a frisbee in its mouth is catching a frisbee."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a black and white dog jumping in the air to catch a frisbee. The dog is mid-air, displaying its athleticism and agility. The scene takes place in a park, with the dog's action being the main focus of the image.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a black and white dog jumping in the air to catch a white frisbee. The dog is in mid-air, displaying its agility and athleticism. The scene captures the dog's excitement and determination to catch the frisbee, which is flying towards it."
+        },
+        "molmo": {
+          "original": " In this dynamic photograph, a black and white dog is captured mid-leap, snatching a white frisbee with black lettering from the air. The dog, which has a striking black and white coat with a white belly and white paws, is suspended in mid-air with its front paws extended forward and its back legs trailing behind. The dog's head is predominantly black with a distinctive white stripe running down the center, and it has a black nose. Its ears are pointed and stand upright. The dog is wearing a black and white checkered collar. The background features a grassy field with a blurred orange fence adorned with banners. One banner is orange with a black silhouette of a dog catching a frisbee, while the other is blue with a white silhouette of a dog in a similar pose. The scene is set outdoors, with trees and a pole visible in the distance, adding depth to the image.",
+          "crop": " This is a detailed photograph of a black and white Border Collie in mid-air, leaping to catch a white frisbee with black writing on it. The dog, which has a distinctive black and white checkered collar, is captured in a dynamic pose with its front paws extended forward and its back legs bent at the knees, giving the impression of a playful, almost human-like stance. The dog's head is tilted to the left, with its ears pointed straight up, and its eyes focused intently on the frisbee, which is positioned just below its mouth. The background is blurred, featuring a mix of green grass, a gray pole, and a red fence, suggesting an outdoor setting, possibly a park or a field. The dog's white chest, belly, and paws contrast sharply with its black back, creating a striking visual effect. The image is taken from a slightly low angle, emphasizing the dog's energetic leap and the motion of the frisbee."
+        }
+      },
+      "domain": "clothing"
+    },
+    {
+      "id": "2376993",
+      "image": "subset_10/images/2376993.jpg",
+      "crop": "subset_10/images/2376993_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a fighter jet on the runway",
+          "crop": "a fighter jet taking off from an airport runway"
+        },
+        "git": {
+          "original": "a fighter jet with the number 21 on the tail.",
+          "crop": "a fighter jet with the number 35 on the tail."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a military jet fighter plane on a runway, either taking off or preparing for takeoff. The jet is the main focus of the scene, and it appears to be a large and powerful aircraft. The runway is surrounded by a grassy area, and there are other airplanes in the background, indicating that this location is a busy airport or military base.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a military jet fighter plane, specifically an F-16, sitting on a runway. The jet is parked on the tarmac, and it appears to be a large and powerful aircraft. The scene also includes a truck parked nearby, possibly for support or maintenance purposes."
+        },
+        "molmo": {
+          "original": " The image captures a dynamic scene at an airfield, featuring two military fighter jets on a runway. The primary focus is on a gray jet in the foreground, marked with the number 216 on both its left and right wings. This jet, equipped with two engines and a glass cockpit, appears to be in the process of taking off or landing, with its landing gear extended. The jet's tail fin prominently displays the letters \"AD\" and the number \"5.\" In the background, another similar jet is visible, also gray with the number 216 on its left wing, and it is positioned on a blue tarmac. The runway itself is gray, and the surrounding area includes patches of brown grass and a line of trees in the distance. The image is watermarked with \"NP Photo\" in the bottom right corner.",
+          "crop": " The image depicts a military fighter jet, likely an F-16, captured in the midst of takeoff on a runway. The jet, painted in a light gray color, is shown from a side view with its nose pointed to the right. The aircraft features two vertical tail fins and two horizontal tail fins, with the number \"6\" and the letter \"F\" inscribed on the back fins. The jet's landing gear is still extended, indicating it is in the initial stages of takeoff. The runway beneath the jet is gray, and the surrounding area includes patches of brown grass and a blue tarp in the background. The cockpit is visible, with two clear windows for the pilots. The jet also has the number \"216\" marked on its wings."
+        }
+      },
+      "domain": "vehicles"
+    },
+    {
+      "id": "2405680",
+      "image": "subset_10/images/2405680.jpg",
+      "crop": "subset_10/images/2405680_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a man playing tennis",
+          "crop": "a man swinging a tennis racket"
+        },
+        "git": {
+          "original": "a man wearing a white shirt with the word \" on it.",
+          "crop": "a man wearing a white shirt that says \" adidas \" on the front."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a man playing tennis on a court. He is in the middle of a serve, holding a tennis racket and preparing to hit the ball. The scene captures the intensity and focus required for the sport.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a man in the process of serving a tennis ball. He is wearing a white shirt and is in the middle of throwing the ball up in the air to hit it with his tennis racket. The scene captures the intensity and focus required during a tennis match."
+        },
+        "molmo": {
+          "original": " The image captures a dynamic moment of a man playing tennis on a bright, sunny day. He is wearing a white t-shirt with a yellow logo, black shorts with a white stripe, and a black baseball cap. The man is in mid-action, having just hit a yellow tennis ball with his racket, which has a black handle and a white net. His right arm is extended upwards, gripping the racket, while his left arm is bent at the elbow, positioned near his waist. The background features a gray brick wall with a chain-link fence on top, beyond which a lush green landscape with trees and a distant building is visible. The sky is clear and blue, indicating a beautiful day for tennis. In the bottom right corner of the image, there is a signature in white text that reads \"Fabio Tahonosi.\"",
+          "crop": " The image captures a man in mid-action, seemingly about to serve a tennis ball. He is wearing a white t-shirt with a yellow logo on the left chest and black shorts with white stripes down the sides. His left arm is raised high, gripping a tennis racket, while his right arm is bent at the elbow, positioned near his chest. The man is wearing a black baseball cap and a black watch on his left wrist. His head is tilted back, looking up at the racket. The background features a gray brick wall with a chain-link fence visible above it, suggesting an outdoor setting. The image is taken from a low angle, emphasizing the man's upward reach and dynamic pose."
+        }
+      },
+      "domain": "sports_outdoor"
+    },
+    {
+      "id": "2407849",
+      "image": "subset_10/images/2407849.jpg",
+      "crop": "subset_10/images/2407849_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a pizza with blue cheese and onions on a blue table",
+          "crop": "a blue and purple pizza with blueberries and onions"
+        },
+        "git": {
+          "original": "a pizza with onions, tomatoes, and onions on it.",
+          "crop": "a pizza with a knife and a knife on it"
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a pizza with various toppings, including tomatoes, green peppers, and cheese. The pizza is placed on a wooden cutting board, and a knife is also visible in the scene. The pizza appears to be freshly baked and ready to be sliced and served.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a close-up view of a pizza with various toppings, including tomatoes, onions, and green peppers. The pizza is placed on a wooden cutting board, and a knife is also visible in the scene. The pizza appears to be freshly baked and ready to be enjoyed."
+        },
+        "molmo": {
+          "original": " This image showcases a rectangular, thin-crust pizza with a golden-brown crust, resting on a dark brown wooden cutting board. The pizza is adorned with a variety of toppings, including vibrant red cherry tomatoes, thinly sliced red onions, and fresh green spinach leaves. The cheese, which appears to be a creamy white, possibly ricotta or mozzarella, is generously spread across the surface. The pizza is garnished with a sprinkle of green herbs, likely parsley or oregano, adding a touch of color and flavor. A silver knife with a black handle is placed next to the pizza on the cutting board. The cutting board itself is set on a light brown wooden table, and in the background, there is a black object that could be a chair or a piece of furniture. The overall presentation is visually appealing, with the pizza looking freshly baked and ready to be served.",
+          "crop": " This image showcases a rectangular, artisanal flatbread, possibly a focaccia, resting on a dark wooden cutting board. The flatbread, with its golden-brown crust, is generously topped with melted white cheese, likely ricotta or mozzarella, and garnished with vibrant cherry tomatoes, sliced red onions, and fresh green basil leaves. A sprinkle of green herbs, possibly parsley or oregano, adds a touch of color and flavor. The cutting board sits on a light brown wooden table, and a sharp knife is placed beside the flatbread, ready for serving. The overall presentation is rustic and appetizing, highlighting the fresh, colorful ingredients against the warm tones of the bread and wooden surfaces."
+        }
+      },
+      "domain": "food"
+    },
+    {
+      "id": "2386432",
+      "image": "subset_10/images/2386432.jpg",
+      "crop": "subset_10/images/2386432_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a computer monitor and keyboard on a desk",
+          "crop": "a desk with a computer and a keyboard on it"
+        },
+        "git": {
+          "original": "a computer monitor is on a desk with a keyboard and mouse.",
+          "crop": "a keyboard is under a desk with a keyboard and a mouse."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a computer desk with two computer monitors, a keyboard, and a mouse. The monitors are placed on a stand, and the keyboard and mouse are positioned in front of them. The desk setup appears to be a workstation for productivity and multitasking.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a computer desk with a keyboard and a mouse on it. The keyboard is white, and the mouse is located to the right of the keyboard. The desk appears to be a wooden one, and there is a cell phone placed on the desk, close to the keyboard. The scene suggests a workspace or a personal computer setup."
+        },
+        "molmo": {
+          "original": " The image depicts a well-organized office desk setup. The desk itself is a light brown color, providing a warm and inviting workspace. On the left side of the desk, there is a large Dell computer monitor with a black frame, displaying a white screen with some text on the right side. The monitor is supported by a black stand with a silver base.\n\nTo the right of the Dell monitor, there is a laptop elevated on a white stand. The laptop screen shows a blue background with a white square in the center and some text on the right side. The stand consists of two columns of five white shelves each, creating a stable and elevated platform for the laptop.\n\nBeneath the desk, there is a black shelf that holds a white keyboard and a white mouse. The mouse has a red light on its bottom, adding a subtle accent to the setup.\n\nIn the background, you can see a black phone with a black cord on the right side of the desk. The wall behind the desk is brown, and there are windows with white blinds, allowing natural light to filter into the workspace.\n\nOverall, the desk setup is neat, functional, and well-coordinated, with a mix of black, white, and brown elements creating a professional and comfortable environment.",
+          "crop": " The image depicts a close-up view of a curved, beige-colored desk, possibly made of plastic or wood. The desk features a smooth, rounded edge and is cluttered with various items. Dominating the scene is a white keyboard with raised keys, positioned centrally on the desk. To the left of the keyboard, there is a silver circular base with a black object on top, likely a monitor stand, from which several black cords extend. On the right side of the keyboard, there is a white, rectangular object with horizontal slats, resembling a paper organizer or a small shelf. The background is dark, making it difficult to discern additional details, but there appears to be a black object, possibly a mouse, on the right side of the desk. The overall image is small and somewhat blurry, focusing primarily on the desk and its immediate contents."
+        }
+      },
+      "domain": "other"
+    },
+    {
+      "id": "2366998",
+      "image": "subset_10/images/2366998.jpg",
+      "crop": "subset_10/images/2366998_cropped.jpg",
+      "captions": {
+        "BLIP2": {
+          "original": "a stack of three suitcases",
+          "crop": "a couch with a blue and purple striped blanket"
+        },
+        "git": {
+          "original": "a stack of suitcases with the word emergency on them",
+          "crop": "a blue suitcase with the word \" klm \" on the side."
+        },
+        "llava": {
+          "original": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a pile of luggage, including suitcases and a backpack, stacked on a wooden table. The luggage is in various sizes and colors, creating a visually interesting scene. The pile of luggage is likely waiting to be packed or unpacked, indicating that someone is either preparing for a trip or has recently returned from one.",
+          "crop": "USER:  \nWhat is shown in this image?\nASSISTANT: The image shows a suitcase sitting on top of a striped chair. The chair has a striped pattern, and the suitcase is placed on top of it. The scene suggests that someone might be preparing for a trip or has just returned from one."
+        },
+        "molmo": {
+          "original": " The image depicts a cozy living room scene with a focus on a wooden coffee table made of dark brown wood. On the table, there are three pieces of luggage stacked on top of each other. The bottom suitcase is black with yellow tags and a black handle. The middle suitcase is navy blue with white text that reads \"Xerox\" and features a black handle. The top suitcase is gray with a black handle and a gold lock. To the left of the table, there is a blue and red striped couch, and to the right, a brown couch with a black jacket draped over it. The floor is covered with a white carpet, and in the background, there is a white wall with a white lamp. The overall setting suggests a comfortable, lived-in space.",
+          "crop": " The image depicts a vertically oriented, narrow scene featuring a striped couch and a stack of suitcases. The couch, positioned on the left side of the image, has a distinctive pattern of alternating stripes in dark blue, light blue, and red, with the stripes running vertically. The couch appears to be a two-seater, with a visible armrest and a cushioned backrest. The floor beneath the couch is a light brown wood, adding a warm tone to the setting.\n\nOn the right side of the image, there is a stack of three suitcases, each partially cut off at the edges. The bottom suitcase is black, the middle one is blue, and the top suitcase is gray. The gray suitcase features a visible silver zipper and a black handle. The blue suitcase has white text that reads \"AIRSTORE,\" and the black suitcase also has white text, though it is not fully legible. The suitcases are stacked in a way that suggests they are ready for travel, with the handles of the top two suitcases protruding outward."
+        }
+      },
+      "domain": "home"
+    }
+  ]
+}
