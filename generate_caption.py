@@ -2,58 +2,17 @@ import argparse
 import ast
 import os
 import pickle
-import sys
-from os import path
 from os.path import isfile, join
 
 import cv2
-from PIL import Image
-from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, GenerationConfig
-
-sys.path.append(path.abspath('../Show_and_Tell'))
-
 import pandas as pd
-from huggingface_hub import hf_hub_download
-from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
+from PIL import Image
+from transformers import AutoProcessor, Blip2ForConditionalGeneration
+from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, GenerationConfig
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 MAX_TOKENS = 512  # Maximum number of tokens for caption generation
-
-
-def generate_flamingo(image):
-    from open_flamingo import create_model_and_transforms
-    model, image_processor, tokenizer = create_model_and_transforms(
-        clip_vision_encoder_path="ViT-L-14",
-        clip_vision_encoder_pretrained="openai",
-        lang_encoder_path="anas-awadalla/mpt-7b",
-        tokenizer_path="anas-awadalla/mpt-7b",
-        cross_attn_every_n_layers=1,
-
-    )
-    model.to(device)
-    checkpoint_path = hf_hub_download("openflamingo/OpenFlamingo-9B-vitl-mpt7b", "checkpoint.pt")
-    model.load_state_dict(torch.load(checkpoint_path), strict=False)
-
-    vision_x = [image_processor(image).unsqueeze(0)]
-    vision_x = torch.cat(vision_x, dim=0)
-    vision_x = vision_x.unsqueeze(1).unsqueeze(0)
-
-    tokenizer.padding_side = "left"  # For generation padding tokens should be on the left
-    lang_x = tokenizer(
-        ["<image>\nWhat is shown in this image?<|endofchunk|>"],
-        return_tensors="pt",
-    )
-    generated_text = model.generate(
-        vision_x=vision_x.to(device),
-        lang_x=lang_x["input_ids"].to(device),
-        attention_mask=lang_x["attention_mask"].to(device),
-        max_new_tokens=MAX_TOKENS,
-        num_beams=3,
-    )
-    prompt = tokenizer.decode(generated_text[0])
-
-    return prompt
 
 
 def generate_blip2(image):
@@ -121,8 +80,6 @@ def generate_molmo(image):
 def generate_caption(image, vlm_model="BLIP2"):
     if vlm_model == "BLIP2":
         generated_text = generate_blip2(image)
-    elif vlm_model == "flamingo":
-        generated_text = generate_flamingo(image)
     elif vlm_model == "llava":
         generated_text = generate_llava(image)
     elif vlm_model == "git":
@@ -153,13 +110,17 @@ def crop_images(dataframe):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--vlm', nargs='+', required=False, choices=["BLIP2", "flamingo", "llava", "git", "molmo"],
-                        help="Specify the VLM model to use for caption generation.",
-                        default="BLIP2")
+    parser.add_argument(
+        "--vlm",
+        nargs="+",
+        default=["BLIP2", "llava", "git", "molmo"],
+        help="VLM model names corresponding to captions/<model>.pkl (space-separated).",
+    )
     parser.add_argument('--vg_path', type=str, required=False, default="../VG_100K")
     parser.add_argument('--csv', type=str, required=False, default="manynames-en.tsv")
     parser.add_argument('--images', type=str, required=False, default="images")
-    parser.add_argument('--crop_images', type=bool, required=False, default=False)
+    parser.add_argument('--crop_images', type=bool, required=False, default=False, help="Crop images")
+    parser.add_argument('--captions_dir', type=str, default="captions", help="Directory to save captions.")
     args = parser.parse_args()
 
     if args.crop_images:
@@ -167,7 +128,7 @@ if __name__ == '__main__':
         crop_images(df)
 
     images = [f for f in os.listdir(args.images) if isfile(join(args.images, f))]
-    os.makedirs("captions", exist_ok=True)
+    os.makedirs(args.captions_dir, exist_ok=True)
     for vlm in args.vlm:
         caption_dict = {}
         i = 0
@@ -178,11 +139,11 @@ if __name__ == '__main__':
 
             caption_dict[image_path] = caption_image
             if i % 1000 == 1:
-                with open(f'captions/{vlm}.pkl', 'wb') as f:
+                with open(os.path.join(args.captions_dir, f"{vlm}.pkl")) as f:
                     pickle.dump(caption_dict, f)
                 print("image number:", i, "image:", image_path)
 
             i += 1
 
-        with open(f'captions/{vlm}.pkl', 'wb') as b:
+        with open(os.path.join(args.captions_dir, f"{vlm}.pkl")) as b:
             pickle.dump(caption_dict, b)

@@ -18,25 +18,14 @@ Assumptions (tunable via CLI):
 - All actual images live in --images-dir (e.g., ./images).
 
 Usage examples:
-  # Explicit list of models
-  python build_subset_dataset.py \
-      --images-dir ./images \
-      --model blip2=./pickles/blip2.pkl \
-      --model show_and_tell=./pickles/show_and_tell.pkl \
-      --model openflamingo=./pickles/openflamingo.pkl \
-      --model git=./pickles/git.pkl \
-      --model llava=./pickles/llava.pkl \
-      --model molmo=./pickles/molmo.pkl \
-      --out-dir subset_30 \
-      --dataset-json dataset_subset.json \
-      --n 30
 
-  # Or auto‑discover: one model per *.pkl (model name = file stem)
+  #auto‑discover: one model per *.pkl (model name = file stem)
   python build_subset_dataset.py \
       --images-dir ./images \
-      --models-glob "./pickles/*.pkl" \
+      --models-glob "./captions/*.pkl" \
       --out-dir subset_30 \
       --dataset-json dataset_subset.json
+      --n 30
 
 Notes:
 - If fewer than N ids satisfy completeness across all models, the script will
@@ -115,7 +104,7 @@ class FilePair:
 # Utilities
 # -------------------------------------------------------------
 
-def base_id_from_filename(name: str) -> Tuple[str, bool]:
+def base_id_from_filename(name):
     """Return (base_id, is_crop) stripped of extension and _crop/_cropped suffix.
     Examples:
       123.jpg -> ("123", False)
@@ -132,7 +121,7 @@ def base_id_from_filename(name: str) -> Tuple[str, bool]:
     return base, is_crop
 
 
-def iterate_entries(obj: Any) -> Iterable[Tuple[str, str]]:
+def iterate_entries(obj):
     """Iterate (filename, caption) pairs from common pickle shapes."""
     if isinstance(obj, dict):
         for k, v in obj.items():
@@ -161,7 +150,7 @@ def iterate_entries(obj: Any) -> Iterable[Tuple[str, str]]:
                     yield str(fn), str(cap)
 
 
-def classify_domain(texts: Iterable[str]) -> str:
+def classify_domain(texts):
     counts = Counter()
     blob = (" ".join(texts)).lower()
     for dom, keys in DOMAIN_LEX.items():
@@ -173,7 +162,7 @@ def classify_domain(texts: Iterable[str]) -> str:
     return counts.most_common(1)[0][0]
 
 
-def allocate_samples(grouped: Dict[str, List[str]], n: int, seed: int = 42) -> List[str]:
+def allocate_samples(grouped, n, seed = 42):
     """Evenly draw up to n ids across present groups with spillover handling."""
     rng = random.Random(seed)
     present = {k: v[:] for k, v in grouped.items() if v}
@@ -184,7 +173,7 @@ def allocate_samples(grouped: Dict[str, List[str]], n: int, seed: int = 42) -> L
         return []
     per = max(1, n // len(domains))
 
-    chosen: List[str] = []
+    chosen = []
     # First pass: per domain
     for d in domains:
         take = min(per, len(present[d]))
@@ -203,7 +192,7 @@ def allocate_samples(grouped: Dict[str, List[str]], n: int, seed: int = 42) -> L
 # Main pipeline
 # -------------------------------------------------------------
 
-def collect_models(args) -> List[Tuple[str, Path]]:
+def collect_models(args):
     models: List[Tuple[str, Path]] = []
     # From explicit --model flags
     if args.model:
