@@ -1,21 +1,7 @@
 #!/usr/bin/env python3
 """
-Build a completeness‑strict, ~30‑image stratified subset from your zero‑shot
+Build a completeness‑strict, image stratified subset from your zero‑shot
 caption outputs and create a dataset JSON for the localhost annotator.
-
-Key guarantees & features:
-- **Completeness enforced by default**: every selected image id has BOTH
-  original and crop captions for **every** provided model.
-- **Variable number of models**: pass any number of pickles via repeated
-  --model flags, or use --models-glob to auto‑add all *.pkl in a folder.
-- Copies the chosen image pairs into an output folder and emits a dataset JSON
-  that the web app (index.html) can load.
-
-Assumptions (tunable via CLI):
-- Pickles map filename → caption (e.g., "123.jpg" and "123_cropped.jpf").
-  The script also tries a few common alternative shapes; tweak iterate_entries()
-  if your format differs.
-- All actual images live in --images-dir (e.g., ./images).
 
 Usage examples:
 
