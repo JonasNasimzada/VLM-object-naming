@@ -29,14 +29,12 @@ import random
 import re
 import shutil
 from collections import defaultdict, Counter
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, Tuple, Any, List, Optional
 
-# -------------------------------------------------------------
+ # -------------------------------------------------------------
 # Heuristic domain classification using keyword hits in captions
 # -------------------------------------------------------------
-DOMAIN_LEX: Dict[str, List[str]] = {
+DOMAIN_LEX = {
     # People / Clothing are split so we can see which dominates per image
     "people": [
         "person", "people", "man", "woman", "boy", "girl", "child", "kid", "face",
@@ -75,16 +73,12 @@ ALL_DOMAINS = list(DOMAIN_LEX.keys()) + ["other"]
 
 CROP_PAT = re.compile(r"(?P<id>.*?)(?:_(?:crop|cropped))?\.(?P<ext>[^.]+)$", re.IGNORECASE)
 
-@dataclass
 class FilePair:
-    id: str
-    orig_file: Optional[str] = None
-    crop_file: Optional[str] = None
-    captions_by_model: Dict[str, Dict[str, str]] = None  # {model: {"original": str, "crop": str}}
-
-    def __post_init__(self):
-        if self.captions_by_model is None:
-            self.captions_by_model = {}
+    def __init__(self, id, orig_file=None, crop_file=None, captions_by_model=None):
+        self.id = id
+        self.orig_file = orig_file
+        self.crop_file = crop_file
+        self.captions_by_model = {} if captions_by_model is None else captions_by_model
 
 # -------------------------------------------------------------
 # Utilities
@@ -179,7 +173,7 @@ def allocate_samples(grouped, n, seed = 42):
 # -------------------------------------------------------------
 
 def collect_models(args):
-    models: List[Tuple[str, Path]] = []
+    models = []
     # From explicit --model flags
     if args.model:
         for spec in args.model:
@@ -219,20 +213,20 @@ def main():
                     help="Allow items that lack orig+crop for some models (NOT recommended)")
     args = ap.parse_args()
 
-    images_dir: Path = args.images_dir
-    out_dir: Path = args.out_dir
-    out_images: Path = out_dir / "images"
+    images_dir = args.images_dir
+    out_dir = args.out_dir
+    out_images = out_dir / "images"
 
     models = collect_models(args)
     model_names = [m[0] for m in models]
 
     # Load pickles and merge
-    @dataclass
     class Accum:
-        pairs: Dict[str, FilePair]
-        coverage: Dict[str, Dict[str, int]]  # model -> {"orig":count, "crop":count, "both":count}
+        def __init__(self):
+            self.pairs = {}
+            self.coverage = defaultdict(lambda: {"orig": 0, "crop": 0, "both": 0})
 
-    acc = Accum(pairs={}, coverage=defaultdict(lambda: {"orig":0, "crop":0, "both":0}))
+    acc = Accum()
 
     for model_name, pkl_path in models:
         with open(pkl_path, "rb") as f:
@@ -288,10 +282,10 @@ def main():
         raise SystemExit("\nNo items satisfy the completeness criteria across all models.\nCheck your pickles and --images-dir, or use --allow-incomplete.")
 
     # Domain classification per id (use all captions across models/views for that id)
-    id_domain: Dict[str, str] = {}
+    id_domain = {}
     for i in kept_ids:
         fp = acc.pairs[i]
-        texts: List[str] = []
+        texts = []
         for m in model_names:
             views = fp.captions_by_model.get(m, {})
             if "original" in views: texts.append(views["original"])
@@ -300,7 +294,7 @@ def main():
         id_domain[i] = dom
 
     # Group and sample
-    grouped: Dict[str, List[str]] = defaultdict(list)
+    grouped = defaultdict(list)
     for i, dom in id_domain.items():
         grouped[dom].append(i)
 
