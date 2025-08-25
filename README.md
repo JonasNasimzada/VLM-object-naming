@@ -17,7 +17,7 @@ conda activate vlm
 
 ```cmd
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
-pip install pandas transformers matplotlib wordcloud python-opencv
+pip install pandas transformers matplotlib wordcloud opencv-python
 ```
 
 ---
